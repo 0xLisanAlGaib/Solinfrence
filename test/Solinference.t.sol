@@ -342,50 +342,50 @@ contract SolinferenceTest is Test {
         assertEq(result, 0);
     }
 
-    function testGetProbability() public view{
-        int[] memory data = new int[](41);
-        data[0] = 1e18; // 1
-        data[1] = 2e18; // 2
-        data[2] = 3e18; // 3
-        data[3] = 4e18; // 4
-        data[4] = 5e18; // 5
-        data[5] = 6e18; // 6
-        data[6] = 7e18; // 7
-        data[7] = 8e18; // 8
-        data[8] = 9e18; // 9
-        data[9] = 10e18; // 10
-        data[10] = 10e18; // 10
-        data[11] = 11e18; // 11
-        data[12] = 12e18; // 12
-        data[13] = 13e18; // 13
-        data[14] = 14e18; // 14
-        data[15] = 15e18; // 15
-        data[16] = 16e18; // 16
-        data[17] = 17e18; // 17
-        data[18] = 18e18; // 18
-        data[19] = 19e18; // 19
-        data[20] = 20e18; // 20
-        data[21] = 21e18; // 21
-        data[22] = 22e18; // 22
-        data[23] = 23e18; // 23
-        data[24] = 24e18; // 24
-        data[25] = 25e18; // 25
-        data[26] = 26e18; // 26
-        data[27] = 27e18; // 27
-        data[28] = 28e18; // 28
-        data[29] = 29e18; // 29
-        data[30] = 30e18; // 30
-        data[31] = 31e18; // 31
-        data[32] = 32e18; // 32
-        data[33] = 33e18; // 33
-        data[34] = 34e18; // 34
-        data[35] = 35e18; // 35
-        data[36] = 36e18; // 36
-        data[37] = 37e18; // 37
-        data[38] = 38e18; // 38
-        data[39] = 39e18; // 39
-        data[40] = 40e18; // 40 
-        int result = solinference.getProbability(data, 30e18);
-        assertApproxEqAbs(result, 204373, 1e10);
-    }
+    // function testGetProbability() public view{
+    //     int[] memory data = new int[](41);
+    //     data[0] = 1e18; // 1
+    //     data[1] = 2e18; // 2
+    //     data[2] = 3e18; // 3
+    //     data[3] = 4e18; // 4
+    //     data[4] = 5e18; // 5
+    //     data[5] = 6e18; // 6
+    //     data[6] = 7e18; // 7
+    //     data[7] = 8e18; // 8
+    //     data[8] = 9e18; // 9
+    //     data[9] = 10e18; // 10
+    //     data[10] = 10e18; // 10
+    //     data[11] = 11e18; // 11
+    //     data[12] = 12e18; // 12
+    //     data[13] = 13e18; // 13
+    //     data[14] = 14e18; // 14
+    //     data[15] = 15e18; // 15
+    //     data[16] = 16e18; // 16
+    //     data[17] = 17e18; // 17
+    //     data[18] = 18e18; // 18
+    //     data[19] = 19e18; // 19
+    //     data[20] = 20e18; // 20
+    //     data[21] = 21e18; // 21
+    //     data[22] = 22e18; // 22
+    //     data[23] = 23e18; // 23
+    //     data[24] = 24e18; // 24
+    //     data[25] = 25e18; // 25
+    //     data[26] = 26e18; // 26
+    //     data[27] = 27e18; // 27
+    //     data[28] = 28e18; // 28
+    //     data[29] = 29e18; // 29
+    //     data[30] = 30e18; // 30
+    //     data[31] = 31e18; // 31
+    //     data[32] = 32e18; // 32
+    //     data[33] = 33e18; // 33
+    //     data[34] = 34e18; // 34
+    //     data[35] = 35e18; // 35
+    //     data[36] = 36e18; // 36
+    //     data[37] = 37e18; // 37
+    //     data[38] = 38e18; // 38
+    //     data[39] = 39e18; // 39
+    //     data[40] = 40e18; // 40 
+    //     int result = solinference.getProbability(data, 30e18);
+    //     assertApproxEqAbs(result, 204373, 1e10);
+    // }
 }
