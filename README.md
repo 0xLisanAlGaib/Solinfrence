@@ -68,3 +68,8 @@ This library is compatible with Solidity version >=0.8.0, leveraging the built-i
 ## Future Work
 
 We aim to continue improving the library by adding more advanced statistical functions (e.g., covariance, correlation), incorporating additional distributions (e.g., Chi-square, F, Binomial), optimizing gas usage for larger datasets, adding hypothesis testing and more!
+
+greater than, less than, in between
+hypothesis testing
+confidence intervals
+Black-Scholes pricing

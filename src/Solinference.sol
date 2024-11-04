@@ -154,11 +154,20 @@ contract Solinference  is DSMath {
     }
     
     // Function to round to the nearest integer (for both positive and negative numbers)
-    function roundToNearestInteger(int256 number) public pure returns (int256) {
+    function roundToNearestInteger(int number) public pure returns (int) {
         if (number >= 0) {
             return (number + 5 * 10**17) / 10**18;
         } else {
             return (number - 5 * 10**17) / 10**18;
+        }
+    }
+
+    // Function to round a RAY number to nearest hundredth * 100
+    function roundToHundredths(int number) public pure returns (int) {
+        if (number >= 0) {
+            return (number + 5 * 10**15) / (10**16);
+        } else {
+            return (number - 5 * 10**15) / (10**16);
         }
     }
 
@@ -167,16 +176,21 @@ contract Solinference  is DSMath {
     function zScore(int[] memory values, int _proposedMean) public pure returns (int) {
         require(values.length > 0, "Data array must not be empty");
         int sampleMean = mean(values);
-        uint _stdDev = uint(stdDev(values));
+        int _stdDev = stdDev(values);
         require(_stdDev != 0, "Standard deviation cannot be zero");
+        
+        // Calculate sqrt(n) where n is array length
         int arraySize = int(values.length * WAD);
-
-        int sqrtSize = int(sqrt(arraySize));  // sqrt(array size)
-        int stdError = int(_stdDev) * int(WAD) / sqrtSize;  // Standard error = stdDev / sqrt(array size)
-        int numerator = (sampleMean - _proposedMean);  // Note: order switched and no need to multiply by WAD
-        int _zScore = numerator / stdError;  // z = (mean - proposedMean) / stdError
-        // int zScore = roundToNearestInteger(_zScore);
-        return _zScore;
+        int sqrtSize = sqrt(arraySize);
+        
+        // Calculate standard error (stdDev / sqrt(n))
+        int stdError = _stdDev * int(WAD) / sqrtSize;
+        
+        // Calculate z-score = (mean - proposedMean) / stdError
+        int numerator = (_proposedMean - sampleMean) * int(WAD);
+        int _zScore = numerator / stdError;
+        
+        return roundToHundredths(_zScore);
     }
 
     // Function to retrieve the value from the zTable

@@ -340,9 +340,10 @@ contract SolinferenceTest is Test {
         data[38] = 38e18; // 38
         data[39] = 39e18; // 39
         data[40] = 40e18; // 40 
-        int result = solinference.zScore(data, 30e18);
-        assertEq(result, 415238574162714260);
+        int result = solinference.zScore(data, 25e18);
+        assertEq(result, 264); 
     }
+    
 
     // function testGetProbability() public view{
     //     int[] memory data = new int[](41);
