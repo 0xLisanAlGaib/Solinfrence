@@ -1,70 +1,66 @@
-# BETA
-This code is in Beta and is not ready for production.
+## Foundry
 
-# INFERENCE LIBRARY
+**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
-**Solinference** is a statistical inference library implemented in Solidity that provides a set of statistical functions for performing basic descriptive statistics and statistical inference on-chain. The library is designed to operate efficiently within Solidity’s constraints and offers a variety of common statistical functions. It consists of two contracts: **Solinference** and **Z-mapping**.
+Foundry consists of:
 
-The **Solinference** contract contains the main statistical inference functions, including mean, median, mode, range, variance, standard deviation, population variance, and population standard deviation. **Z-mapping** is a contract that contains a mapping from Phi to the normal distribution density. The normal distribution (also known as Gaussian or bell curve distribution) is used for modeling randomness and is commonly employed in the pricing of financial assets.
+-   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
+-   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
+-   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
+-   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
-Using distribution functions in Solidity poses challenges because they often require handling irrational numbers and many decimals. By creating a library with Phi values corresponding to values within the density, we can eliminate the need to hardcode approximations for irrational numbers, allowing us to work exclusively with decimals of Phi in the range of [-3.49, 3.49]. By utilizing **DS-Math** from DappHub, we can safely use fixed-point decimal numbers to interact with the Inference library. Performing complex calculations related to probability distributions can be GAS inefficient, so having a library with the proper mapping of Phi values to probability density can be of great benefit to the community.
+## Documentation
 
-## Features
-The following statistical functions are included in this library:
+https://book.getfoundry.sh/
 
-- **Mean**: Calculates the average of a given set of values.
-- **Median**: Finds the middle value in a sorted dataset.
-- **Mode**: Determines the most frequent value(s) in the dataset.
-- **Range**: Computes the difference between the maximum and minimum values.
-- **Variance**: Measures the dispersion of data points in relation to the mean.
-- **Standard Deviation**: Assesses the amount of variation or dispersion of a dataset.
-- **Phi Function (Φ)**: Calculates the cumulative distribution function (CDF) of the normal distribution.
+## Usage
 
-## How It Works
-The library is built with Solidity's constraints in mind, such as gas limits and the absence of floating-point arithmetic. It ensures compatibility by leveraging fixed-point math for handling decimal values and employs efficient algorithms for computations. We use **DS-Math** from DappHub to operate with floating-point arithmetic for calculating the Phi function, which is then used to compute the Z-value of the normal distribution.
+### Build
 
-```solidity
-import "./Solinference.sol";
-
-contract MyStatsContract is Solinference {
-
-    function getStats(uint[] memory data) public view returns (uint _mean, uint _median, uint _mode, uint _range, uint _variance, uint _stdDev) {
-        _mean = data.mean();
-        _median = data.median();
-        _mode = data.mode();
-        _range = data.range();
-        _variance = data.variance();
-        _stdDev = data.stdDev();
-    }
-
-    // This function needs to be corrected; it is not working
-    function getPhiValue(int z) public view returns (uint phi) {
-        phi = StatsLibrary.phi(z);
-    }
-}
+```shell
+$ forge build
 ```
 
-## Phi Function for Statistical Inference
+### Test
 
-The Phi function in this library calculates the CDF of the standard normal distribution. It allows users to compute the probability that a value drawn from a normal distribution is less than or equal to a specified z value. This is particularly useful in hypothesis testing, confidence intervals, and the pricing of financial assets (e.g., Black-Scholes), as well as in other statistical inference scenarios, all while being able to do this on-chain.
+```shell
+$ forge test
+```
 
-If a given dataset is normally distributed (X ~ N(μ, σ²)), we normalize the data by converting it into a Standard Normal Distribution (N(0, 1)) using the formula: 
+### Format
 
-z = (X - μ) / σ
+```shell
+$ forge fmt
+```
 
-This transformation allows us to use the Z-table to find the Phi value, which we can then use to calculate the probability of the value being within the z-value: 
+### Gas Snapshots
 
-P(X ≤ x) = Φ((x - μ) / σ)
+```shell
+$ forge snapshot
+```
 
-## Solidity Version
+### Anvil
 
-This library is compatible with Solidity version >=0.8.0, leveraging the built-in overflow protections introduced in newer versions.
+```shell
+$ anvil
+```
 
-## Installation
+### Deploy
 
-1. Clone this repository.
-2. Import `Solinference.sol` into your Solidity project.
+```shell
+$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```
 
-## Future Work
+### Cast
 
-We aim to continue improving the library by adding more advanced statistical functions (e.g., covariance, correlation), incorporating additional distributions (e.g., Chi-square, F, Binomial), and optimizing gas usage for larger datasets.
+```shell
+$ cast <subcommand>
+```
+
+### Help
+
+```shell
+$ forge --help
+$ anvil --help
+$ cast --help
+```
