@@ -124,31 +124,33 @@ contract Solinference  is DSMath {
         int sumOfSquaredDifferences = 0;
         for (uint i = 0; i < values.length; i++) {
             int difference = values[i] - meanValue;
-            int squaredDifference = difference * difference;
+            int squaredDifference = (difference * difference) / int(WAD);
             sumOfSquaredDifferences += squaredDifference;
         }
-        // Calculate the variance
-        int varianceResult = sumOfSquaredDifferences / int(values.length);
-        // Adjust the scale by dividing by 10^22
-        return varianceResult / 10**22;
+        return sumOfSquaredDifferences / int(values.length);
     }
 
     // Custom square root function
-    function sqrt(uint x) internal pure returns (int y) {
-        uint z = (x + 1) / 2;
-        uint y_uint = x;
+    function sqrt(int x) public pure returns (int y) {
+        // Compute the square root
+        int z = (x + 1) / 2;
+        int y_uint = x;
         while (z < y_uint) {
             y_uint = z;
             z = (x / z + z) / 2;
         }
+        // At this point, y_uint is the square root of our ray number
+        // We need to scale it by 10^9 to maintain ray precision
+        // Since sqrt(x * 10^18) = sqrt(x) * 10^9
+        y_uint = y_uint * 10**9;
         y = int(y_uint);
-        require(y >= 0, "Overflow: sqrt result doesn't fit in int");
+        require(y >= 0, "Underflow: sqrt result doesn't fit in int");
     }
 
     // Calculate the standard deviation of an array of values
     function stdDev(int[] memory values) public pure returns (int) {
         int _variance = variance(values);
-        return int(sqrt(uint256(_variance)));
+        return sqrt(_variance);
     }
     
     // Function to round to the nearest integer (for both positive and negative numbers)
@@ -162,26 +164,26 @@ contract Solinference  is DSMath {
 
     // Function to calculate z-value
     // z = (proposed mean - sample mean) / (standard deviation / sqrt(array size))
-    function zValue(int[] memory values, int _proposedMean) public pure returns (int) {
+    function zScore(int[] memory values, int _proposedMean) public pure returns (int) {
         require(values.length > 0, "Data array must not be empty");
         int sampleMean = mean(values);
         uint _stdDev = uint(stdDev(values));
         require(_stdDev != 0, "Standard deviation cannot be zero");
-        uint arraySize = values.length * WAD;
+        int arraySize = int(values.length * WAD);
 
         int sqrtSize = int(sqrt(arraySize));  // sqrt(array size)
         int stdError = int(_stdDev) * int(WAD) / sqrtSize;  // Standard error = stdDev / sqrt(array size)
-        int numerator = (_proposedMean - sampleMean) * int(WAD);
-        int _zValue = numerator / stdError;  // z = (proposedMean - sampleMean) / stdError
-        int ZValue = roundToNearestInteger(_zValue);
-        return ZValue;
+        int numerator = (sampleMean - _proposedMean);  // Note: order switched and no need to multiply by WAD
+        int _zScore = numerator / stdError;  // z = (mean - proposedMean) / stdError
+        // int zScore = roundToNearestInteger(_zScore);
+        return _zScore;
     }
 
     // Function to retrieve the value from the zTable
     // The input will be the full z-value scaled by 100, e.g., -2.35 -> -235
     function getProbability(int[] memory values, int proposedMean) public view returns (int) {
-        int phi = zValue(values, proposedMean);
-        int prob = zTableInstance.zTable(phi);
+        int _zScore = zScore(values, proposedMean);
+        int prob = zTableInstance.zTable(_zScore);
         return prob;
     }
 }

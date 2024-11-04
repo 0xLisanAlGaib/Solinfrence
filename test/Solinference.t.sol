@@ -244,8 +244,10 @@ contract SolinferenceTest is Test {
         data[39] = 39e18; // 39
         data[40] = 40e18; // 40 
         int256 result = solinference.variance(data);
-        assertApproxEqAbs(result, 13262343842950624, 1e6); // Adjusted expected value and tolerance
+        assertApproxEqAbs(result, 132623438429506240000, 1e6); // Adjusted expected value and tolerance
     }
+   
+
 
     function testStdDev() public view{
         int[] memory data = new int[](41);
@@ -291,11 +293,11 @@ contract SolinferenceTest is Test {
         data[39] = 39e18; // 39
         data[40] = 40e18; // 40 
         int256 result = solinference.stdDev(data);
-        assertApproxEqAbs(result, 115162250, 1e10); // Expected std deviation is 11.659289188893286
-    }
+        assertApproxEqAbs(result, 11516225007766488000, 1e10); // Expected std deviation is 11.516225007766488
+    } 
 
 
-    function testZValue() public view {
+    function testZScore() public view {
         int[] memory data = new int[](41);
         data[0] = 1e18; // 1
         data[1] = 2e18; // 2
@@ -338,8 +340,8 @@ contract SolinferenceTest is Test {
         data[38] = 38e18; // 38
         data[39] = 39e18; // 39
         data[40] = 40e18; // 40 
-        int result = solinference.zValue(data, 30e18);
-        assertEq(result, 0);
+        int result = solinference.zScore(data, 30e18);
+        assertEq(result, 415238574162714260);
     }
 
     // function testGetProbability() public view{
