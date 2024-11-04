@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import { DSMath } from "lib/ds-math";
+import { DSMath } from "lib/ds-math/src/math.sol";
 import { ZTableMapping } from "./Z-mapping.sol";
 
 contract Solinference  is DSMath {
