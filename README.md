@@ -18,10 +18,11 @@ The following statistical functions are included in this library:
 - **Range**: Computes the difference between the maximum and minimum values.
 - **Variance**: Measures the dispersion of data points in relation to the mean.
 - **Standard Deviation**: Assesses the amount of variation or dispersion of a dataset.
-- **Phi Function (Φ)**: Calculates the cumulative distribution function (CDF) of the normal distribution.
+- **Z-Score**: Calculates the number of standard deviations a value is from the mean. The value is rounded to the nearest hundredth.
+- **Phi Function (Φ)**: Calculates the cumulative distribution function (CDF) of the normal distribution. The probability is defined between 0 and 10,000.
 
 ## How It Works
-The library is built with Solidity's constraints in mind, such as gas limits and the absence of floating-point arithmetic. It ensures compatibility by leveraging fixed-point math for handling decimal values and employs efficient algorithms for computations. We use **DS-Math** from DappHub to operate with floating-point arithmetic for calculating the Phi function, which is then used to compute the Z-value of the normal distribution.
+The library is built with Solidity's constraints in mind, such as gas limits and the absence of floating-point arithmetic. It ensures compatibility by leveraging fixed-point math for handling decimal values and employs efficient algorithms for computations. We use **DS-Math** from DappHub to operate with fixed-point arithmetic for calculating the Phi function, which is then used to compute the Z-value of the normal distribution. Therefore, all values must be in fixed-point format (WAD) for the functions to work.
 
 ```solidity
 import "./Solinference.sol";
@@ -37,9 +38,12 @@ contract MyStatsContract is Solinference {
         _stdDev = data.stdDev();
     }
 
-    // This function needs to be corrected; it is not working
-    function getPhiValue(int z) public view returns (uint phi) {
-        phi = StatsLibrary.phi(z);
+    function getPhiValue(uint[] memory data) public view returns (uint phi) {
+        phi = Solinference.zScore(data);
+    }
+
+    function hypothesisTest(uint[] memory data, uint _proposedMean) public view returns (uint _probability) {
+        _probability = Solinference.getProbability(data, _proposedMean);
     }
 }
 ```
@@ -65,14 +69,22 @@ This library is compatible with Solidity version >=0.8.0, leveraging the built-i
 1. Clone this repository.
 2. Import `Solinference.sol` into your Solidity project.
 
+In order to use the Z-mapping, you must deploy the ZTableMapping contract and pass the address to the Solinference contract.
+
+```solidity
+import { ZTableMapping } from "./Z-mapping.sol";
+
+contract ContractNmae {
+    ZTableMapping private zTableInstance;
+
+    constructor(address _zTableMappingAddress) {
+        zTableInstance = ZTableMapping(_zTableMappingAddress);
+
+    ... //Rest of contract code
+    }
+}
+```
+
 ## Future Work
 
-We aim to continue improving the library by adding more advanced statistical functions (e.g., covariance, correlation), incorporating additional distributions (e.g., Chi-square, F, Binomial), optimizing gas usage for larger datasets, adding hypothesis testing and more!
-
-
-How it works: array must be in fixed-point format (WAD) for the functions to work.
-
-greater than, less than, in between
-hypothesis testing
-confidence intervals
-Black-Scholes pricing
+We aim to continue improving the library by adding more advanced statistical functions (e.g., covariance, correlation), incorporating additional distributions (e.g., Chi-square, F, Binomial), optimizing gas usage for larger datasets, adding hypothesis testing (greater than, less than, in between), adding confidence intervals and more!

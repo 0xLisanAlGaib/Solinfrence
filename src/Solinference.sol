@@ -139,7 +139,6 @@ contract Solinference  is DSMath {
             y_uint = z;
             z = (x / z + z) / 2;
         }
-        // At this point, y_uint is the square root of our ray number
         // We need to scale it by 10^9 to maintain ray precision
         // Since sqrt(x * 10^18) = sqrt(x) * 10^9
         y_uint = y_uint * 10**9;
@@ -151,15 +150,6 @@ contract Solinference  is DSMath {
     function stdDev(int[] memory values) public pure returns (int) {
         int _variance = variance(values);
         return sqrt(_variance);
-    }
-    
-    // Function to round to the nearest integer (for both positive and negative numbers)
-    function roundToNearestInteger(int number) public pure returns (int) {
-        if (number >= 0) {
-            return (number + 5 * 10**17) / 10**18;
-        } else {
-            return (number - 5 * 10**17) / 10**18;
-        }
     }
 
     // Function to round a RAY number to nearest hundredth * 100
@@ -179,11 +169,11 @@ contract Solinference  is DSMath {
         int _stdDev = stdDev(values);
         require(_stdDev != 0, "Standard deviation cannot be zero");
         
-        // Calculate sqrt(n) where n is array length
+        // Calculate sqrt(array size)
         int arraySize = int(values.length * WAD);
         int sqrtSize = sqrt(arraySize);
         
-        // Calculate standard error (stdDev / sqrt(n))
+        // Calculate standard error (stdDev / sqrt(array size))
         int stdError = _stdDev * int(WAD) / sqrtSize;
         
         // Calculate z-score = (mean - proposedMean) / stdError
