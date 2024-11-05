@@ -193,11 +193,11 @@ contract Solinference  is DSMath {
         return roundToHundredths(_zScore);
     }
 
-    // Function to retrieve the value from the zTable
-    // The input will be the full z-value scaled by 100, e.g., -2.35 -> -235
-    function getProbability(int[] memory values, int proposedMean) public view returns (int) {
-        int _zScore = zScore(values, proposedMean);
-        int prob = zTableInstance.zTable(_zScore);
-        return prob;
+    function getProbability(int[] memory data, int256 value) public view returns (int256) {
+        // Calculate z-score first
+        int256 zScoreResult = zScore(data, value);
+        
+        // Get probability from Z-mapping using contract instance
+        return zTableInstance.zTable(zScoreResult);
     }
 }
