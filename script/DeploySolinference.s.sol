@@ -8,11 +8,12 @@ import {ZTableMapping} from "../src/Z-mapping.sol";
 
 contract DeploySolinference is Script {
     ZTableMapping private zTableInstance;
+    address public Z_TABLE_MAPPING_ADDRESS;
 
     constructor(address _zTableMappingAddress) {
         zTableInstance = ZTableMapping(_zTableMappingAddress);
+        Z_TABLE_MAPPING_ADDRESS = address(zTableInstance);
     }
-    address public Z_TABLE_MAPPING_ADDRESS = address(zTableInstance);
 
     function run() public returns (Solinference) {
         vm.startBroadcast();
