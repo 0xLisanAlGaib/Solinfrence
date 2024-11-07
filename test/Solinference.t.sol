@@ -111,7 +111,7 @@ contract SolinferenceTest is Test {
         assertApproxEqAbs(result, 20e18, 1e12); // Expected median is 20
     }
 
-    function testRange() public view{
+    function testRange() public view {
         int[] memory data = new int[](41);
         data[0] = 1e18; // 1
         data[1] = 2e18; // 2
@@ -158,7 +158,7 @@ contract SolinferenceTest is Test {
         assertApproxEqAbs(result, 39e18, 1e12);  // Expected range is 40 - 1 = 39
     }
 
-    function testMode() public view{
+    function testMode() public view {
         int[] memory data = new int[](41);
         data[0] = 1e18; // 1
         data[1] = 2e18; // 2
@@ -206,7 +206,7 @@ contract SolinferenceTest is Test {
         assertEq(result[0], 10e18); // Expected mode is 10
     }
 
-    function testVariance() public view{
+    function testVariance() public view {
         int[] memory data = new int[](41);
         data[0] = 1e18; // 1
         data[1] = 2e18; // 2
@@ -255,7 +255,7 @@ contract SolinferenceTest is Test {
    
 
 
-    function testStdDev() public view{
+    function testStdDev() public view {
         int[] memory data = new int[](41);
         data[0] = 1e18; // 1
         data[1] = 2e18; // 2
