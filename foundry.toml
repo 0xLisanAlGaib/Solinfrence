@@ -6,6 +6,10 @@ fs_permissions = [{ access = "read-write", path = ".forge-snapshots/"}, { access
 solc = "0.8.20"
 evm_version = "cancun"
 gas_limit = "300000000"
+remappings = [
+    "forge-std/=lib/forge-std/src/",
+    "ds-math/=lib/ds-math/src/"
+]
 
 [profile.default.fuzz]
 runs = 1000
