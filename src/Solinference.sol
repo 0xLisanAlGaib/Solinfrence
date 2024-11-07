@@ -4,14 +4,34 @@ pragma solidity 0.8.20;
 import { DSMath } from "lib/ds-math/src/math.sol";
 import { ZTableMapping } from "./Z-mapping.sol";
 
+
+/**
+ * @title Solinference
+ * @dev A contract for statistical inference using Z-scores and mapping based on Z-tables.
+ *      It inherits functionality from `DSMath` for mathematical operations.
+ *      The contract interacts with a Z-table mapping contract to retrieve probability values.
+ */
 contract Solinference  is DSMath {
     ZTableMapping private zTableInstance;
 
+    /**
+     * @notice Constructor that initializes the contract with the address of a Z-table mapping contract.
+     * @dev Sets the address of the `ZTableMapping` contract, which is used to fetch Z-table values
+     *      for calculating probabilities based on Z-scores.
+     * @param _zTableMappingAddress The address of the deployed `ZTableMapping` contract.
+     */
     constructor(address _zTableMappingAddress) {
         zTableInstance = ZTableMapping(_zTableMappingAddress);
     }
 
-    // Calculate the mean of an array of integer values
+    /**
+    * @notice Calculates the mean (average) of a dataset.
+    * @dev Computes the mean by summing all elements in `data` and dividing by the number of elements.
+    *      Requires that the dataset is non-empty.
+    * @param data An array of integer data points representing the dataset.
+    * @return int The calculated mean of the dataset as an integer.
+    * @custom:requirements The dataset must not be empty and in fixed-point WAD format
+    */
     function mean(int[] memory data) public pure returns (int) {
         require(data.length > 0, "Data array is empty");
         int sum = 0;
@@ -21,20 +41,34 @@ contract Solinference  is DSMath {
         return sum / int(data.length);
     }
 
-    // Sort the array in ascending order
-    function bubbleSort(int[] memory arr) public pure returns (int[] memory) {
-        uint n = arr.length;
+    /**
+    * @notice Sorts an array of integers in ascending order using the bubble sort algorithm.
+    * @dev Performs an in-place sort on the array `data` by repeatedly swapping adjacent elements
+    *      if they are out of order.
+    * @param data An array of integers to be sorted in ascending order.
+    * @return int[] The sorted array in ascending order.
+    */
+    function bubbleSort(int[] memory data) public pure returns (int[] memory) {
+        uint n = data.length;
         for (uint i = 0; i < n - 1; i++) {
             for (uint j = 0; j < n - i - 1; j++) {
-                if (arr[j] > arr[j + 1]) {
-                    (arr[j], arr[j + 1]) = (arr[j + 1], arr[j]);
+                if (data[j] > data[j + 1]) {
+                    (data[j], data[j + 1]) = (data[j + 1], data[j]);
                 }
             }
         }
-        return arr;
+        return data;
     }
 
-    // Calculate the median of an array of values
+    /**
+    * @notice Calculates the median of a dataset.
+    * @dev The function first sorts the array `data` in ascending order using `bubbleSort`. 
+    *      It then finds the median: for an odd-length array, the middle element; for an even-length array, 
+    *      the average of the two middle elements.
+    * @param data An array of integer data points representing the dataset.
+    * @return int The median of the dataset as an integer.
+    * @custom:requirements The dataset must not be empty.
+*/
     function median(int[] memory data) public pure returns (int) {
         require(data.length > 0, "Data array is empty");
         int[] memory sortedData = bubbleSort(data);
@@ -46,7 +80,14 @@ contract Solinference  is DSMath {
         }
     }
 
-    // Calculate the range of an array of values
+    /**
+    * @notice Calculates the range of values in a dataset.
+    * @dev The function first sorts the array `data` in ascending order using `bubbleSort`. 
+    *      It then calculates the range as the difference between the maximum and minimum values.
+    * @param data An array of integer data points representing the dataset.
+    * @return uint256 The range of the dataset as an unsigned integer.
+    * @custom:requirements The dataset must not be empty.
+    */
     function range(int[] memory data) public pure returns (uint256) {
         require(data.length > 0, "Data array is empty");
         int[] memory sortedArray = bubbleSort(data);
@@ -55,7 +96,17 @@ contract Solinference  is DSMath {
         return uint256(maxValue > minValue ? maxValue - minValue : minValue - maxValue);
     }
     
-    // Calculate the mode of an array of values
+    /**
+    * @notice Finds the mode(s) of a dataset, which is the most frequently occurring value(s).
+    * @dev This function iterates through the array `data` to identify unique values and their frequencies.
+    *      It stores each unique value along with its frequency in separate arrays. After determining 
+    *      the highest frequency, it returns an array containing the mode(s) (i.e., values that appear 
+    *      the most frequently).
+    * @param data An array of integer data points representing the dataset.
+    * @return int[] An array containing the mode(s) of the dataset. If multiple values have the highest 
+    *               frequency, all such values are returned.
+    * @custom:requirements The dataset must not be empty.
+    */
     function mode(int[] memory data) public pure returns (int[] memory) {
         uint256 len = data.length;
         require(len > 0, "Array is empty");
@@ -117,20 +168,35 @@ contract Solinference  is DSMath {
         return result;
     }
 
-    // Calculate the variance of an array of values
-    function variance(int[] memory values) public pure returns (int) {
-        require(values.length > 0, "Array is empty");
-        int meanValue = mean(values);
+    /**
+    * @notice Calculates the variance of a dataset.
+    * @dev The variance is computed by finding the mean of the squared differences from the mean.
+    *      First, the mean of `data` is calculated. Then, for each value, the squared difference from
+    *      the mean is summed. The function divides the sum by the number of values to get the variance.
+    * @param data An array of integer data points representing the dataset.
+    * @return int The calculated variance of the dataset as an integer.
+    * @custom:requirements The dataset must not be empty.
+    */
+    function variance(int[] memory data) public pure returns (int) {
+        require(data.length > 0, "Array is empty");
+        int meanValue = mean(data);
         int sumOfSquaredDifferences = 0;
-        for (uint i = 0; i < values.length; i++) {
-            int difference = values[i] - meanValue;
+        for (uint i = 0; i < data.length; i++) {
+            int difference = data[i] - meanValue;
             int squaredDifference = (difference * difference) / int(WAD);
             sumOfSquaredDifferences += squaredDifference;
         }
-        return sumOfSquaredDifferences / int(values.length);
+        return sumOfSquaredDifferences / int(data.length);
     }
 
-    // Custom square root function
+    /**
+    * @notice Computes the square root of a given integer `x`.
+    * @dev Uses the Babylonian method to iteratively approximate
+    *      the square root of `x`. The result is scaled by 10^9 to maintain precision.
+    * @param x The integer for which to calculate the square root.
+    * @return y The square root of `x`, scaled by 10^9 for precision.
+    * @custom:requirements The input `x` must be non-negative to avoid underflow. Also, negative numbers don't have square roots.
+    */
     function sqrt(int x) public pure returns (int y) {
         // Compute the square root
         int z = (x + 1) / 2;
@@ -146,13 +212,28 @@ contract Solinference  is DSMath {
         require(y >= 0, "Underflow: sqrt result doesn't fit in int");
     }
 
-    // Calculate the standard deviation of an array of values
+    /**
+    * @notice Calculates the standard deviation of a dataset.
+    * @dev The standard deviation is computed by taking the square root of the variance of `values`.
+    *      Requires that the dataset is non-empty, as `variance` requires a non-empty dataset.
+    * @param values An array of integer data points representing the dataset.
+    * @return int The calculated standard deviation of the dataset as an integer, scaled for precision.
+    * @custom:requirements The dataset must not be empty.
+    */
     function stdDev(int[] memory values) public pure returns (int) {
         int _variance = variance(values);
         return sqrt(_variance);
     }
 
-    // Function to round a RAY number to nearest hundredth * 100
+    /**
+    * @notice Rounds a given integer to the nearest hundredth.
+    * @dev This function rounds the input `number` to the nearest integer in the hundredths place
+    *      by adding or subtracting a scaling factor based on the sign of the number and then dividing 
+    *      by 10^16 to maintain precision.
+    * @param number The integer to be rounded.
+    * @return int The rounded integer.
+    * @custom:requirements The number must be in WAD format (10^18).
+    */
     function roundToHundredths(int number) public pure returns (int) {
         if (number >= 0) {
             return (number + 5 * 10**15) / (10**16);
@@ -161,8 +242,18 @@ contract Solinference  is DSMath {
         }
     }
 
-    // Function to calculate z-value
-    // z = (proposed mean - sample mean) / (standard deviation / sqrt(array size))
+
+    /**
+    * @notice Calculates the z-score of a proposed mean against a sample dataset.
+    * @dev Computes the z-score using the formula: (proposedMean - sampleMean) / (stdDev / sqrt(n)),
+    *      where `stdDev` is the standard deviation of the sample data, and `n` is the sample size.
+    *      The function requires a non-empty dataset and a non-zero standard deviation.
+    * @param values An array of integer data points representing the sample dataset.
+    * @param _proposedMean The hypothesized population mean to test against.
+    * @return int The calculated z-score, rounded to the nearest hundredths.
+    * @custom:requirements All calculations are performed using WAD (10^18) precision,
+    *                      the dataset must not be empty, and its standard deviation must not be zero.
+    */
     function zScore(int[] memory values, int _proposedMean) public pure returns (int) {
         require(values.length > 0, "Data array must not be empty");
         int sampleMean = mean(values);
@@ -183,6 +274,14 @@ contract Solinference  is DSMath {
         return roundToHundredths(_zScore);
     }
 
+    /**
+    * @notice Calculates the probability of a given value within a dataset based on its z-score.
+    * @dev The function first calculates the z-score of the specified `value` within the dataset `data`.
+    *      It then retrieves the corresponding probability from a Z-score table using a contract instance.
+    * @param data An array of integer data points representing the dataset.
+    * @param value The specific value for which to calculate the probability within the dataset.
+    * @return int256 The probability associated with the calculated z-score, as an integer between 0 and 10,000.
+    */
     function getProbability(int[] memory data, int256 value) public view returns (int256) {
         // Calculate z-score first
         int256 zScoreResult = zScore(data, value);

@@ -3,11 +3,23 @@
 // Solidity contract for z-table mapping from -3.49 to 3.49
 pragma solidity ^0.8.0;
 
+
+/**
+ * @title ZTableMapping
+ * @dev A contract that provides a mapping from scaled Z-scores to corresponding phi values 
+ *      based on pre-defined Z-tables. This example covers Z-scores from -3.49 to 3.49.
+ */
 contract ZTableMapping {
 
     // Define a mapping where the key is the scaled phi value (phi * 100)
     mapping(int => int) public zTable;
 
+    /**
+     * @notice Constructor to initialize the Z-table with predefined values.
+     * @dev Sets values in the `zTable` mapping for Z-scores between -3.49 and 3.49. 
+     *      These values represent the scaled phi (cumulative probability) for specific Z-scores.
+     *      The probability is defined between 0 and 10,000, so 0 -> 0% and 10,000 -> 100%.
+     */
     constructor() {
         zTable[-349] = 2;    // z = -3.49 -> 0.0002
         zTable[-348] = 3;    // z = -3.48 -> 0.0003

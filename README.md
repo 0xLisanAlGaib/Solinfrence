@@ -19,31 +19,40 @@ The following statistical functions are included in this library:
 - **Variance**: Measures the dispersion of data points in relation to the mean.
 - **Standard Deviation**: Assesses the amount of variation or dispersion of a dataset.
 - **Z-Score**: Calculates the number of standard deviations a value is from the mean. The value is rounded to the nearest hundredth.
-- **Phi Function (Φ)**: Calculates the cumulative distribution function (CDF) of the normal distribution. The probability is defined between 0 and 10,000.
+- **Get Probability**: Calculates the cumulative distribution function (CDF) of the normal distribution. The probability is defined between 0 and 10,000.
 
 ## How It Works
 The library is built with Solidity's constraints in mind, such as gas limits and the absence of floating-point arithmetic. It ensures compatibility by leveraging fixed-point math for handling decimal values and employs efficient algorithms for computations. We use **DS-Math** from DappHub to operate with fixed-point arithmetic for calculating the Phi function, which is then used to compute the Z-value of the normal distribution. Therefore, all values must be in fixed-point format (WAD) for the functions to work.
 
 ```solidity
-import "./Solinference.sol";
+import { Solinference } from "./Solinference.sol";
+import { ZTableMapping } from "./Z-mapping.sol";
 
 contract MyStatsContract is Solinference {
+    ZTableMapping private zTableInstance;
 
-    function getStats(uint[] memory data) public view returns (uint _mean, uint _median, uint _mode, uint _range, uint _variance, uint _stdDev) {
-        _mean = data.mean();
-        _median = data.median();
-        _mode = data.mode();
-        _range = data.range();
-        _variance = data.variance();
-        _stdDev = data.stdDev();
+    constructor(address _zTableMappingAddress) {
+        zTableInstance = ZTableMapping(_zTableMappingAddress);
     }
 
-    function getPhiValue(uint[] memory data) public view returns (uint phi) {
-        phi = Solinference.zScore(data);
+    // All these functions take as input an array of integers in fixed-point format (WAD).
+    function getStats(uint[] memory data) public view returns (uint _mean, uint _median, int[] memory _mode, uint _range, uint _variance, uint _stdDev) {
+        _mean = Solinference.mean(data); // Mean
+        _median = Solinference.median(data); // Median
+        _mode = Solinference.mode(data); // Mode
+        _range = Solinference.range(data); // Range
+        _variance = Solinference.variance(data); // Variance
+        _stdDev = Solinference.stdDev(data); // Standard Deviation
     }
 
+    // This function takes as input an array of integers in fixed-point format (WAD) and an integer representing the proposed mean.
+    function getZScore(uint[] memory data, uint _proposedMean) public view returns (uint _zScore) {
+        _zScore = Solinference.zScore(data, _proposedMean); // Z-Score
+    }
+
+    // This function takes as input an array of integers in fixed-point format (WAD) and an integer representing the proposed mean.
     function hypothesisTest(uint[] memory data, uint _proposedMean) public view returns (uint _probability) {
-        _probability = Solinference.getProbability(data, _proposedMean);
+        _probability = Solinference.getProbability(data, _proposedMean); // Get Probability
     }
 }
 ```
